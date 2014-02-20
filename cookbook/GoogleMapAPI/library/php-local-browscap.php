@@ -57,7 +57,11 @@ function get_browser_local($user_agent=null,$return_array=false,$db='./browscap.
  global $browscapPath;
  if ((!isset($browscapIni))||(!$cache)||($browscapPath!==$db))
  {
-  $browscapIni=parse_ini_file($db,true); //Get php_browscap.ini on http://www.garykeith.com/browsers/downloads.asp
+  if(version_compare(PHP_VERSION, '5.3.0', '<')) {
+    $browscapIni=parse_ini_file($db,true); //Get php_browscap.ini on http://www.garykeith.com/browsers/downloads.asp
+  } else {
+    $browscapIni=parse_ini_file($db,true,INI_SCANNER_RAW); //Get php_browscap.ini on http://www.garykeith.com/browsers/downloads.asp
+  }
   $browscapPath=$db;
  }
  $cap=null;
