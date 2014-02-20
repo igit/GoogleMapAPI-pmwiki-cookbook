@@ -58,9 +58,9 @@ function get_browser_local($user_agent=null,$return_array=false,$db='./browscap.
  if ((!isset($browscapIni))||(!$cache)||($browscapPath!==$db))
  {
   if(version_compare(PHP_VERSION, '5.3.0', '<')) {
-    $browscapIni=parse_ini_file($db,true); //Get php_browscap.ini on http://www.garykeith.com/browsers/downloads.asp
+    $browscapIni=parse_ini_file($db,true); //Get php_browscap.ini on http://browscap.org/
   } else {
-    $browscapIni=parse_ini_file($db,true,INI_SCANNER_RAW); //Get php_browscap.ini on http://www.garykeith.com/browsers/downloads.asp
+    $browscapIni=parse_ini_file($db,true,INI_SCANNER_RAW); //Get php_browscap.ini on http://browscap.org/
   }
   $browscapPath=$db;
  }
