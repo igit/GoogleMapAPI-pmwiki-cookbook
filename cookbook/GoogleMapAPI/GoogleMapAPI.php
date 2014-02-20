@@ -50,6 +50,12 @@ SDV($RecipeInfo['GoogleMapAPI']['Version'], $GmaVersion);
 if (is_array($GmaKey)) 
     $GmaKey = $GmaKey[preg_replace('/www./','', $_SERVER['HTTP_HOST'])];
 
+SDV($GmaScheme, 'http');
+if (!empty($_SERVER['HTTPS'])) {
+   $GmaScheme = 'https';
+}
+
+
 # Markup
 # * (:gma-map [options]:)
 # * (:gma-point lat lon [options]:)
@@ -221,7 +227,7 @@ class GmaPoint
 } // End Class GmaPoint
 function gmaBrowserFix() { }
 function gmaAddressLookup($a) {
-    global $GmaCacheDir, $GmaKey;
+    global $GmaCacheDir, $GmaKey, $GmaScheme;
 
     $res = false;
     $fname = preg_replace("/\/\//", "/", "$GmaCacheDir/".md5($a).".txt");
@@ -232,7 +238,8 @@ function gmaAddressLookup($a) {
     }
     if(!$res) {
         $url = sprintf(
-                'http://maps.google.com/maps/geo?&q=%s&output=csv&key=%s',
+                '%s://maps.google.com/maps/geo?&q=%s&output=csv&key=%s',
+		$GmaScheme,
                 rawurlencode($a),
                 $GmaKey
                );
@@ -254,12 +261,12 @@ function gmaCleanup() {
   global $HTMLHeaderFmt, $HTMLStylesFmt, $HTMLFooterFmt;
   global $GmaEnable, $GmaVersion, $GmaScript;
   global $GmaMaps, $GmaPoints, $GmaLines;
-  global $GmaKey, $GmaDebugMsg, $GmaDefaults;
+  global $GmaKey, $GmaScheme, $GmaDebugMsg, $GmaDefaults;
 
   GmaDoIEFix();
   $HTMLHeaderFmt[] 
      =  '<style type=\'text/css\'>v:* { behavior:url(#default#VML); }</style>'
-       ."\n<script src='http://maps.google.com/maps?file=api&v=2.70&key="
+       ."\n<script src='$GmaScheme://maps.google.com/maps?file=api&v=2.70&key="
        .$GmaKey."' type='text/javascript'></script>";
   $HTMLHeaderFmt[] 
      =  "\n<script language='javascript' src='\$FarmPubDirUrl/scripts/gmaJs.js'>"
