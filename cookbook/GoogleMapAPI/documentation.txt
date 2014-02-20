@@ -1,0 +1,200 @@
+Google Map API for PmWiki 
+=========================
+
+Copyright Statement 
+-------------------
+
+Copyright (c) 2006, Benjamin C. Wilson. All Rights Reserved. You have
+permission to use this software for web site use provided this copyright
+statement remains intact. You may not otherwise republish or alter this
+software without prior permission of the author. License to publish granted
+PmWiki.org for distribution to the PmWiki community. This copyright statement
+must accompany the script.  Any exercise of rights under this license by you
+is subject to the following conditions.
+   1. Redistribution of this software is not permitted.
+   2. Any user documentation must include the copyright statement.
+   3. This copyright statement, disclaimers and limitations must remain with
+      the software.
+   4. Consent to the following disclaimer and limitations of liability.
+
+You may contact the author at ameen@dausha.net. This software is maintained at
+http://www.dausha.net/GoogleMapAPI/. If you have any recommended changes,
+please contact the author.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY, OF SATISFACTORY QUALITY, AND FITNESS
+FOR A PARTICULAR PURPOSE OR USE ARE DISCLAIMED. THE COPYRIGHT HOLDER AND
+CONTRIBUTORS MAKE NO REPRESENTATION THAT THE SOFTWARE, MODIFICATIONS,
+ENHANCEMENTS OR DERIVATIVE WORKS THEREOF, WILL NOT INFRINGE ANY PATENT,
+COPYRIGHT, TRADEMARK, TRADE SECRET OR OTHER PROPRIETARY RIGHT.
+ 
+Limitations of Liability
+~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+THE COPYRIGHT HOLDER AND CONTRIBUTORS SHALL HAVE NO LIABILITY TO LICENSEE OR
+OTHER PERSONS FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL,
+EXEMPLARY, OR PUNITIVE DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT
+LIMITATION, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA OR
+PROFITS, OR BUSINESS INTERRUPTION, HOWEVER CAUSED AND ON ANY THEORY OF
+CONTRACT, WARRANTY, TORT (INCLUDING NEGLIGENCE), PRODUCT LIABILITY OR
+OTHERWISE, ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ 
+License Revisions
+~~~~~~~~~~~~~~~~~
+ 
+The Software Copyright Holder may publish revised and/or new versions of this
+this License from time to time. Each version will be given a distinguishing
+version number. Once a version of Software has been published under a
+particular version of this License, you may continue to use it under the
+terms of that license version. You may also choose to use such Software under
+the terms of any subsequent version of this License published by the
+Copyright Holder. No one other than the Copyright Holder has the right to
+modify the terms of this License.
+
+Abstract
+--------
+
+Embedding a Google map is one way for a web site to speak to its visitors.
+However, generating a Google map is a complex ordeal made slightly more
+difficult when using a wiki to manage site content. The Google Map API (GMA)
+is a receipe for PmWiki that helps the site editor seamlessly make and
+maintain a Google map on the site. This is accomplished by using an
+integrated suite of PmWiki directives which allows editors to mark points,
+make lines, and tie a link to a point on the map. The result is a simple way
+to use Google's powerful map protocol on a PmWiki site.
+
+Installation
+------------
+ 
+Install the Script. The first step in the installation is to acquire and
+install the software. To place the files in their proper location, extract
+the files in the parent directory to both the /pub and /cookbook
+directories.  Otherwise, copy the contents of the two directories as
+appropriate.  Specifically, this software should have the recipe file in the
+/cookbook directory, the javascript in the /pub/scripts directory, and images
+in /pub/images/gma directory.
+ 
+Configure the Site. After the code is installed, you will need to configure
+the site. This is typically done in the local/config.php file, so this How-To
+assumes an installation using the file. Before the site is configured,
+however, you will need to contact Google to obtain a site key.
+(http://www.google.com/apis/maps/signup.html. You will need a unique key for
+each distinct web site. Google does not provide its interface to sites
+without this key.
+ 
+In the configuration file (local/config.php), you must set one variable:
+$GmaKey. Beyond that, you may set other values using $GmaDefaults as
+discussed below. These values should be set before the recipes called. Most
+of these defaults may be overridded via the directives.
+ 
+Once the variables are set, you will need to include the recipe (e.g.
+"require_once('path/to/cookbook/gma-2.0.0.php);"). This command must follow
+the $GmaKey and $GmaDefaults variable declarations.
+ 
+Configure the Skin. Two variables must be embedded in the PmWiki skins that
+are used on that site: $GmaScript and $GmaIEFix. The former variable,
+$GmaScript, must be added immediate before the </body> tag (e.g.
+$GmaScript</body></html>)---in order to avoid triggering a browser bug.
+$GmaIEFix must be placed within the leading <html> tag (e.g.
+<html$GmaIEFix>) to offset a separate browser bug. (Oddly enough, both bugs
+are Internet Explorer-based.) Additionally, you may want to set a CSS value
+for the default DIV tag (e.g. <div id='map'>) in that skin. This is not
+required as the recipe sets default values, but it may be desired.
+
+Using the Google Map API for PmWiki
+-----------------------------------
+ 
+Using this recipe is fairly straight forward. There are three types of map
+tools available: point, line, and map. The map tool must be used to generate
+the map. Either the point or the line must also be used, and these types may
+be mixed. We will take each map tool in turn, beginning with the map tool.
+ 
+Using the Map Tool. The map tool generates the map itself. The map is located
+where the directive is placed on the wiki page. Specifically, the map tool
+returns an empty DIV statement which the Google software uses to embed the
+map. The map tool provides several options which help control the use of the
+map. Each of these options may be configured by the site administrator, or
+set by the editor for a specific map. These options include:
+
+   * 'mapid' (default 'map'): The mapid option allows the editor to determine 
+     the CSS name for the map. This allows multiple maps on a single page.
+   * 'view' (default normal): The view obtion allows the editor to set the
+     initial display of the map. There are three displays available: normal,
+     or a traditional map view; satellite, or a map showing only a satellite
+     image mosaic; and hybrid, or a map which overlays political and road
+     lines over a satellite map. These displays are represented by
+     'nor','sat', or 'hyb' respectively.
+   * 'height' (default 300px): The height option the editor to set the height
+     of the map. This value responds to CSS values (e.g. pixels, em, pt,
+     percent, etc.)
+   * 'width' (default 500px): The width option the editor to set the width of
+     the map. This value responds to CSS values (e.g. pixels, em, pt,
+     percent, etc.)
+   * 'ctrl' (default ): The ctrl option allows the editor to select which map
+     controls are available to the visitor. There are () controls: maptype,
+     large, small, and overview. As each map control may be set by the site
+     administrator, the editor may unset a default value. The negative sign
+     is used to unset a default value (e.g. if the default is to show the
+     overview, then '-overview' will turn off this map control. This variable
+     is an array and values are set in serial (e.g.
+     "ctrl=small,-overview,sat")
+     * The maptype control allows the visitor to change the map type between
+       hybrid, normal and satellite. If set by default, -maptype will turn
+       this control off.
+     * The large and small controls allow the editor to decide whether the
+       zoom and pan controls are large or small. Setting the opposite will
+       deselect the default size.
+     * The overview control allows the visitor to see a small window in the
+       lower right hand corner. This window displays a smaller-scale map of
+       the area in the main window.
+
+Using the Point Tool. The point tool places a marker at the designated spot.
+The location is determined by latitude and longitude settings. Additionally,
+the point can contain a link and/or text. (Coming soon) Finally, the marker
+look can be determined using the icon option. The options include:
+   * lat (default 0): The lat option sets the point's latitude.
+   * lon (default 0): The lon option sets the point's latitude.
+   * zip (default 0): The zip option optionally determines the point's
+     latitude and longitude from the U.S. Census data file (circa 1999).
+   * link (no default): This option creates a link between the point on the
+     Google map and the link-text on the page. Clicking the link on the page
+     causes this point's information window to open. Clicking the link in the
+     information window sends the visitor to the link on the page. The link
+     text should be quoted.
+   * wikilink (no default): This option links the marker point to a
+     separate wiki page. Requires proper wiki markup (double brackets or
+     camel case as appropriate for the web site).
+   * mapid (default 'map'): This option assigns a point to a specific map.
+     This is used in conjunction with the map 'mapid' option to place a
+     point on a specific map.
+   * note (no default): This option is identical to the 'text' option 
+     (below), except there is no marker for directions.
+   * text (no default): This option creates HTML text in an information
+     window. Clicking this point's marker causes the information window to
+     open. The text should be quoted.
+   * icon (not active): This option allows the editor to use any of a
+     number of icons to distinguish points on the map. This includes letters,
+     numbers, colors and shapes.
+
+Using the Line Tool. The line tool generates color-coded lines drawn by a
+series of line-points. Each line-point along the line is described using this
+markup.  The location of each is determined by latitude and longitude
+settings. Additionally, the point can contain a link and/or text.
+   * id (default 0): The id option allows the editor to create multiple
+     lines. When creating more than one line, the id number designates to
+     which line the point is appended.
+   * lat (default 0): The lat option sets the line-point's latitude.
+   * lon (default 0): The lon option sets the point's latitude.
+   * zip (default 0): The zip option optionally determines the point's
+     latitude and longitude from the U.S. Census data file (circa 1999).
+   * 'color' (default #880088): The color option allows the editor to set
+     the line's color. Once the color is set for a given line, it need not be
+     designated again.
+   * 'opacity' (default 2): The opacity option allows the editor to set the
+     line's opacity, measured in percentage (e.g. 0 - 100 percent). Once the
+     opacity is set for a given line, it need not be designated again.
+   * 'thickness' (default 2): The thickness option allows the editor to set
+     the line thickness, measured in pixels. Once the thickness is set for a
+     given line, it need not be designated again.

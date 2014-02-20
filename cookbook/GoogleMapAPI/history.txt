@@ -1,0 +1,8 @@
+
+
+GoogleMapAPI - 2.0.1. August 23, 2006
+-------------------------------------
+
+* Fixed: FarmPubDirUrl instead of PubDirUrl
+* Fixed: Configurable zoom.
+* Fixed: Can control map type.
